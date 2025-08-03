@@ -19,13 +19,19 @@ export async function fetchNewsApiArticles({
   console.log('🔍 NewsAPI - Starting fetch with params:', { q, from, to, sources, category });
   console.log('🔑 NewsAPI - API Key available:', !!API_KEY);
   
+  // Build search query - include category in search if specified
+  let searchQuery = q || 'news';
+  if (category && category !== '') {
+    searchQuery = `${searchQuery} ${category}`;
+  }
+  
   const params = new URLSearchParams({
     apiKey: API_KEY || '',
-    q: q || 'news', // Default query if empty
+    q: searchQuery, // Include category in search query
     from,
     to,
     sources,
-    // NewsAPI does not support category in /everything endpoint, only in /top-headlines
+    // NewsAPI does not support category parameter in /everything endpoint
   });
   
   const url = `${BASE_URL}?${params.toString()}`;

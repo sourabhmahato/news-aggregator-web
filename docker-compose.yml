@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  news-aggregator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_NEWSAPI_KEY=${REACT_APP_NEWSAPI_KEY}
+      - REACT_APP_WORLDNEWS_KEY=${REACT_APP_WORLDNEWS_KEY}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.news-aggregator.rule=Host(`news-aggregator.local`)"
+      - "traefik.http.services.news-aggregator.loadbalancer.server.port=80"
+
+  # Development service (optional)
+  news-aggregator-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - REACT_APP_NEWSAPI_KEY=${REACT_APP_NEWSAPI_KEY}
+      - REACT_APP_WORLDNEWS_KEY=${REACT_APP_WORLDNEWS_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    profiles:
+      - dev 

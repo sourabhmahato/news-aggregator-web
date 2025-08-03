@@ -30,6 +30,7 @@ body {
   margin: 0;
   min-height: 100vh;
   transition: background var(--transition), color var(--transition);
+  overflow-x: hidden;
 }
 
 header, section, aside, main {
@@ -72,11 +73,200 @@ header, section, aside, main {
   transition: background var(--transition), border var(--transition);
 }
 
-@media (max-width: 800px) {
-  aside {
-    display: none;
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--color-bg);
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-bg);
+}
+
+/* Preference Selector Styles */
+.preference-selector {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-card);
+}
+
+.preference-selector::-webkit-scrollbar {
+  width: 6px;
+}
+
+.preference-selector::-webkit-scrollbar-track {
+  background: var(--color-card);
+  border-radius: 3px;
+}
+
+.preference-selector::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 3px;
+}
+
+.preference-selector::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-border);
+  border-radius: 20px;
+  transition: 0.2s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 2px;
+  bottom: 2px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+input:checked + .toggle-slider {
+  background: var(--color-primary);
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* Range Input Styles */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: 5px;
+  height: 6px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  cursor: pointer;
+  border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .main-container {
+    max-width: 100% !important;
+    margin: 0 1rem !important;
   }
-  main {
-    padding: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+  .personalization-panel {
+    min-width: 280px !important;
+    max-width: 300px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .main-layout {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .personalization-panel {
+    width: 100% !important;
+    max-width: 500px !important;
+    margin: 0 0 1rem 0 !important;
+    order: -1;
+  }
+  
+  .article-list {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-container {
+    margin: 0 0.5rem !important;
+  }
+  
+  .personalization-panel {
+    margin: 0 0 1rem 0 !important;
+  }
+  
+  .article-list {
+    padding: 0.5rem !important;
+    grid-template-columns: 1fr !important;
+  }
+  
+  .card {
+    margin: 0.3rem 0 !important;
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-container {
+    margin: 0 !important;
+  }
+  
+  .article-list {
+    padding: 0.3rem !important;
+  }
+  
+  .card {
+    padding: 0.8rem !important;
   }
 }

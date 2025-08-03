@@ -1,46 +1,211 @@
-# Getting Started with Create React App
+# News Aggregator Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React TypeScript application that aggregates news articles from multiple sources with advanced filtering and search capabilities. Built with best practices and fully containerized using Docker.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## ✨ Features
 
-### `npm start`
+* **Multi-source News Aggregation**: Fetches articles from NewsAPI and World News API
+* **Advanced Search & Filtering**: Search by keywords, date range, category, and source
+* **Personalized Feed**: Customize sources, categories, and authors
+* **Category Filtering**: Filter by Technology, Business, Politics, Sports, Entertainment, and Science
+* **Theme System**: Light/Dark mode with persistent storage
+* **Responsive Design**: Works on all device sizes
+* **Real-time Filtering**: Instant results when changing filters
+* **Auto-refresh**: Keeps content fresh automatically
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 🛣️ Docker Deployment
 
-### `npm test`
+> ✅ **The frontend application is fully containerized using Docker and includes complete documentation for running in a Docker container.**
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+* Docker and Docker Compose installed
+* API keys for NewsAPI and World News API
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Environment Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create a `.env` file in the root directory:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```env
+REACT_APP_NEWSAPI_KEY=your_newsapi_key_here
+REACT_APP_WORLDNEWS_KEY=your_worldnews_key_here
+```
 
-### `npm run eject`
+### Production Deployment
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```bash
+docker-compose up --build
+# or run in background
+docker-compose up -d --build
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Access the app at: [http://localhost:3000](http://localhost:3000)
+Health Check: [http://localhost:3000/health](http://localhost:3000/health)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Stop the app:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```bash
+docker-compose down
+```
 
-## Learn More
+### Development Deployment
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+docker-compose --profile dev up --build
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Access dev server: [http://localhost:3001](http://localhost:3001)
+
+### Manual Docker Commands
+
+#### Production Build
+
+```bash
+docker build -t news-aggregator:latest .
+docker run -p 3000:80 \
+  -e REACT_APP_NEWSAPI_KEY=your_key \
+  -e REACT_APP_WORLDNEWS_KEY=your_key \
+  news-aggregator:latest
+```
+
+#### Development Build
+
+```bash
+docker build -f Dockerfile.dev -t news-aggregator:dev .
+docker run -p 3001:3000 \
+  -v $(pwd):/app \
+  -e REACT_APP_NEWSAPI_KEY=your_key \
+  -e REACT_APP_WORLDNEWS_KEY=your_key \
+  news-aggregator:dev
+```
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── api/                    # API integrations
+├── components/             # UI components
+├── constants/              # App constants
+├── context/                # Context providers
+├── services/               # Business logic services
+├── types/                  # Type definitions
+├── utils/                  # Utility functions
+└── styles/                 # Theme & global styles
+```
+
+---
+
+## 🔧 Local Development
+
+### Prerequisites
+
+* Node.js 18+ and npm
+* API keys for NewsAPI and World News API
+
+### Installation
+
+```bash
+npm install
+cp .env.example .env  # Add API keys
+npm start
+```
+
+### Available Scripts
+
+```bash
+npm start          # Start dev server
+npm run build      # Build for production
+npm test           # Run tests
+npm run eject      # Eject from CRA
+```
+
+---
+
+## 🔑 API Keys Required
+
+1. [NewsAPI](https://newsapi.org/)
+2. [World News API](https://worldnewsapi.com/)
+
+---
+
+## 🦚 Testing
+
+```bash
+npm test               # Run tests
+npm test -- --coverage # With coverage
+npm test -- --watch    # Watch mode
+```
+
+---
+
+## 📆 Build for Production
+
+```bash
+npm run build
+```
+
+Output: `build/` folder
+
+---
+
+## 🚀 Deployment Options
+
+### 1. Docker (Recommended)
+
+* Production: `docker-compose up --build`
+* Development: `docker-compose --profile dev up --build`
+
+### 2. Static Hosting
+
+* Netlify / Vercel / AWS S3
+
+### 3. Traditional Hosting
+
+* Upload `build/` folder
+* Ensure SPA routing is configured
+
+---
+
+## 🔍 Troubleshooting
+
+### Docker Issues
+
+```bash
+docker system prune -a
+docker-compose build --no-cache
+docker-compose logs news-aggregator
+```
+
+### API Issues
+
+* Check `.env` file
+* Inspect browser network tab
+
+### Build Issues
+
+```bash
+npm cache clean --force
+rm -rf node_modules package-lock.json
+npm install
+```
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create a new branch
+3. Implement and test
+4. Submit a pull request
