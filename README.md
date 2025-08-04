@@ -30,6 +30,7 @@ Create a `.env` file in the root directory:
 ```env
 REACT_APP_NEWSAPI_KEY=your_newsapi_key_here
 REACT_APP_WORLDNEWS_KEY=your_worldnews_key_here
+REACT_APP_GNEWS_KEY=your_worldnews_key_here
 ```
 
 ### Production Deployment
@@ -128,6 +129,7 @@ npm run eject      # Eject from CRA
 
 1. [NewsAPI](https://newsapi.org/)
 2. [World News API](https://worldnewsapi.com/)
+3. [GNews API](https://gnews.io/)
 
 ---
 
