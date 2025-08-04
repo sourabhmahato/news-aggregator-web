@@ -1,3 +1,0 @@
-endpoint documentation - https://docs.gnews.io/endpoints/top-headlines-endpoint
-endpoint url example - https://gnews.io/api/v4/top-headlines?category=general&lang=en&country=us&max=10&apikey=dad09fc1018589e6c92e37d62148f36a
-api_key - dad09fc1018589e6c92e37d62148f36a (which is setup in .env)
