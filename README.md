@@ -1,8 +1,5 @@
 # News Aggregator Web Application
 
-A modern React TypeScript application that aggregates news articles from multiple sources with advanced filtering and search capabilities. Built with best practices and fully containerized using Docker.
-
----
 
 ## ✨ Features
 
@@ -19,7 +16,7 @@ A modern React TypeScript application that aggregates news articles from multipl
 
 ## 🛣️ Docker Deployment
 
-> ✅ **The frontend application is fully containerized using Docker and includes complete documentation for running in a Docker container.**
+
 
 ### Prerequisites
 

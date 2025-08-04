@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+
 
 type SearchFilterBarProps = {
   onSearch: (params: {
@@ -17,6 +18,16 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ onSearch }) => {
   const [category, setCategory] = useState('');
   const [source, setSource] = useState('');
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      onSearch({ q: searchTerm, from: dateFrom, to: dateTo, category, source });
+    }, 500); // 500ms debounce delay
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, dateFrom, dateTo, category, source, onSearch]);
+
   const handleSearch = () => {
     onSearch({
       q: searchTerm,
@@ -31,33 +42,6 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ onSearch }) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
-  };
-
-  // Auto-search when category or source changes
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newCategory = e.target.value;
-    setCategory(newCategory);
-    // Trigger search immediately when category changes
-    onSearch({
-      q: searchTerm,
-      from: dateFrom,
-      to: dateTo,
-      category: newCategory,
-      source,
-    });
-  };
-
-  const handleSourceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSource = e.target.value;
-    setSource(newSource);
-    // Trigger search immediately when source changes
-    onSearch({
-      q: searchTerm,
-      from: dateFrom,
-      to: dateTo,
-      category,
-      source: newSource,
-    });
   };
 
   return (
@@ -108,7 +92,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ onSearch }) => {
         />
         <select
           value={category}
-          onChange={handleCategoryChange}
+          onChange={(e) => setCategory(e.target.value)}
           style={{
             padding: '0.8rem 1rem',
             border: '1px solid var(--color-border)',
@@ -129,7 +113,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ onSearch }) => {
         </select>
         <select
           value={source}
-          onChange={handleSourceChange}
+          onChange={(e) => setSource(e.target.value)}
           style={{
             padding: '0.8rem 1rem',
             border: '1px solid var(--color-border)',
@@ -143,6 +127,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({ onSearch }) => {
           <option value="">All Sources</option>
           <option value="NewsAPI">NewsAPI</option>
           <option value="World News">World News API</option>
+          <option value="GNews">GNews</option>
         </select>
         <button
           onClick={handleSearch}

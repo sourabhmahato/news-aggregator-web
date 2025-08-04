@@ -13,6 +13,10 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
+# Define build arguments
+ARG REACT_APP_NEWSAPI_KEY
+ARG REACT_APP_WORLDNEWS_KEY
+
 # Build the application
 RUN npm run build
 

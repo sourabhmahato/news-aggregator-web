@@ -1,10 +1,10 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef, useCallback } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle, useMemo, useCallback } from 'react';
 import ArticleCard from './ArticleCard';
 import { Article } from '../types/Article';
 import { NewsService, SearchParams } from '../services/NewsService';
 import { FilterService } from '../services/FilterService';
 import { usePreferences } from '../context/PreferencesContext';
-import { APP_CONSTANTS, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../constants/appConstants';
+import { ERROR_MESSAGES } from '../constants/appConstants';
 
 export interface ArticleListRef {
   fetchArticles: (params?: SearchParams) => void;
@@ -14,30 +14,28 @@ const ArticleList = forwardRef<ArticleListRef>((props, ref) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { preferences, updateAvailableOptions } = usePreferences();
-  const autoRefreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { preferences, updateAvailableOptions, availableOptions: contextAvailableOptions } = usePreferences();
 
-  // Initialize NewsService with API keys
-  const newsService = new NewsService({
+  const newsService = useMemo(() => new NewsService({
     newsApiKey: process.env.REACT_APP_NEWSAPI_KEY,
-    worldNewsKey: process.env.REACT_APP_WORLDNEWS_KEY
-  });
+    worldNewsKey: process.env.REACT_APP_WORLDNEWS_KEY,
+    gnewsKey: process.env.REACT_APP_GNEWS_KEY
+  }), []);
 
-  const fetchArticles = useCallback(async (searchParams?: SearchParams) => {
+  const fetchArticles = useCallback(async (searchParams: SearchParams = {}) => {
     try {
       setLoading(true);
       setError(null);
       
-      const fetchedArticles = await newsService.fetchAllArticles(searchParams || {});
+      const fetchedArticles = await newsService.fetchAllArticles(searchParams);
       
-      // Extract available options from all fetched articles
-      const availableOptions = FilterService.extractAvailableOptions(fetchedArticles);
-      updateAvailableOptions(availableOptions);
+      const newAvailableOptions = FilterService.extractAvailableOptions(fetchedArticles);
       
-      // Apply user preferences filtering
+      if (JSON.stringify(newAvailableOptions) !== JSON.stringify(contextAvailableOptions)) {
+        updateAvailableOptions(newAvailableOptions);
+      }
+      
       const filteredArticles = FilterService.filterArticlesByPreferences(fetchedArticles, preferences);
-      
-      // Limit articles based on user preference
       const limitedArticles = FilterService.limitArticles(filteredArticles, preferences.maxArticles);
       
       setArticles(limitedArticles);
@@ -47,7 +45,7 @@ const ArticleList = forwardRef<ArticleListRef>((props, ref) => {
     } finally {
       setLoading(false);
     }
-  }, [preferences.maxArticles, newsService, updateAvailableOptions]);
+  }, [newsService, preferences, updateAvailableOptions, contextAvailableOptions]);
 
   useImperativeHandle(ref, () => ({
     fetchArticles,
@@ -56,40 +54,6 @@ const ArticleList = forwardRef<ArticleListRef>((props, ref) => {
   useEffect(() => {
     fetchArticles();
   }, [fetchArticles]);
-
-  // Auto-refresh functionality
-  useEffect(() => {
-    if (preferences.autoRefresh) {
-      if (autoRefreshIntervalRef.current) {
-        clearInterval(autoRefreshIntervalRef.current);
-      }
-      
-      autoRefreshIntervalRef.current = setInterval(() => {
-        console.log('🔄 Auto-refreshing articles...');
-        fetchArticles();
-      }, APP_CONSTANTS.AUTO_REFRESH.INTERVAL_MS);
-    } else {
-      if (autoRefreshIntervalRef.current) {
-        clearInterval(autoRefreshIntervalRef.current);
-        autoRefreshIntervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (autoRefreshIntervalRef.current) {
-        clearInterval(autoRefreshIntervalRef.current);
-      }
-    };
-  }, [preferences.autoRefresh, fetchArticles]);
-
-  // Refetch articles when preferences change
-  useEffect(() => {
-    if (articles.length > 0) {
-      const filteredArticles = FilterService.filterArticlesByPreferences(articles, preferences);
-      const limitedArticles = FilterService.limitArticles(filteredArticles, preferences.maxArticles);
-      setArticles(limitedArticles);
-    }
-  }, [preferences, articles.length]);
 
   if (loading) {
     return (
@@ -107,11 +71,6 @@ const ArticleList = forwardRef<ArticleListRef>((props, ref) => {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📰</div>
           <div>Loading articles...</div>
-          {preferences.autoRefresh && (
-            <div style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '0.5rem' }}>
-              Auto-refresh enabled
-            </div>
-          )}
         </div>
       </main>
     );
@@ -204,7 +163,7 @@ const ArticleList = forwardRef<ArticleListRef>((props, ref) => {
           width: '100%',
           maxWidth: '100%'
         }}>
-          <span role="img" aria-label="auto-refresh">🔄</span> {SUCCESS_MESSAGES.AUTO_REFRESH_ENABLED}
+          <span role="img" aria-label="auto-refresh">🔄</span>
         </div>
       )}
       

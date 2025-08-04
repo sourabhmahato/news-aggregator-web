@@ -1,10 +1,12 @@
 import { Article } from '../types/Article';
 import { fetchNewsApiArticles } from '../api/newsapi';
 import { fetchWorldNewsArticles } from '../api/worldnews';
+import { fetchGNewsArticles } from '../api/gnews';
 
 export interface NewsServiceConfig {
   newsApiKey?: string;
   worldNewsKey?: string;
+  gnewsKey?: string;
 }
 
 export interface SearchParams {
@@ -40,16 +42,24 @@ export class NewsService {
     } else {
       console.log('❌ World News API key missing or not configured');
     }
+
+    if (this.isGNewsApiAvailable()) {
+      console.log('✅ GNews API key found, adding to promises');
+      promises.push(fetchGNewsArticles(params));
+    } else {
+      console.log('❌ GNews API key missing or not configured');
+    }
     
+    let allArticles: Article[] = [];
+
     if (promises.length === 0) {
       throw new Error('No API keys configured. Please add your API keys to the .env file.');
     }
-    
+
     const results = await Promise.allSettled(promises);
-    const allArticles: Article[] = [];
     
     results.forEach((result, index) => {
-      const apiName = index === 0 ? 'NewsAPI' : 'World News API';
+      const apiName = index === 0 ? 'NewsAPI' : (index === 1 ? 'World News API' : 'GNews');
       if (result.status === 'fulfilled') {
         console.log(`✅ ${apiName} succeeded with ${result.value.length} articles`);
         allArticles.push(...result.value);
@@ -57,6 +67,10 @@ export class NewsService {
         console.error(`❌ ${apiName} failed:`, result.reason);
       }
     });
+    
+    if (allArticles.length === 0) {
+      throw new Error('No API keys configured or all APIs failed. Please add your API keys to the .env file.');
+    }
     
     return this.sortArticlesByDate(allArticles);
   }
@@ -67,6 +81,10 @@ export class NewsService {
 
   private isWorldNewsApiAvailable(): boolean {
     return !!(this.config.worldNewsKey && this.config.worldNewsKey !== 'your_worldnews_key_here');
+  }
+
+  private isGNewsApiAvailable(): boolean {
+    return !!(this.config.gnewsKey && this.config.gnewsKey !== 'your_gnews_key_here');
   }
 
   private sortArticlesByDate(articles: Article[]): Article[] {
